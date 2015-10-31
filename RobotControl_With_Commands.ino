@@ -6,6 +6,8 @@
 #define I3 4  // Control pin 1 for motor 2
 #define I4 5  // Control pin 2 for motor 2
 
+#define SPEED 80
+
 char command[1];
 void setup() {
     Serial.begin(57600);
@@ -19,8 +21,9 @@ void setup() {
 }
 
 void loop() {
-  //if (Serial.available() > 0) {
-    Serial.readBytes(command, 1);
+    int status = Serial.readBytes(command, 1);
+    if(status == 0)
+      stopRobo();
     if(command[0] == 'F') // Forward
       moveForward();
     if(command[0] == 'B') // Backward
@@ -29,17 +32,13 @@ void loop() {
       stopRobo();
     if(command[0] == 'L') // Left turn
       turnLeft();
-     if(command[0] == 'R') // Right turn
+    if(command[0] == 'R') // Right turn
       turnRight();
-  //}
-    // change direction
-    //analogWrite(E1, 0);
-    //analogWrite(E2, 0);
 }
 
 void moveBackward(){
-    analogWrite(E1, 255);
-    analogWrite(E2, 255);
+    analogWrite(E1, SPEED);
+    analogWrite(E2, SPEED);
 
     digitalWrite(I1, HIGH);
     digitalWrite(I2, LOW);
@@ -48,8 +47,8 @@ void moveBackward(){
  }
 
 void moveForward(){
-    analogWrite(E1, 255);
-    analogWrite(E2, 255);
+    analogWrite(E1, SPEED);
+    analogWrite(E2, SPEED);
 
     digitalWrite(I1, LOW);
     digitalWrite(I2, HIGH);
@@ -60,16 +59,24 @@ void moveForward(){
 void stopRobo(){
     analogWrite(E1, 0);
     analogWrite(E2, 0);
+    digitalWrite(I1, LOW);
+    digitalWrite(I2, LOW);
+    digitalWrite(I3, LOW);
+    digitalWrite(I4, LOW);
 }
 
 void turnLeft(){
-  analogWrite(E2, 255);
+  analogWrite(E2, SPEED);
+  digitalWrite(I1, LOW);
+  digitalWrite(I2, LOW);
   digitalWrite(I3, LOW);
   digitalWrite(I4, HIGH);
   }
 
 void turnRight(){
-    analogWrite(E1, 255);
+    analogWrite(E1, SPEED);
     digitalWrite(I1, LOW);
     digitalWrite(I2, HIGH);
+    digitalWrite(I3, LOW);
+    digitalWrite(I4, LOW);
   }
